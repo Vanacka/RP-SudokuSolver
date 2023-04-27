@@ -1,17 +1,14 @@
 package com.example.rpsudokusolver;
 
 /*
- * Vytvari nahodne reseni sudoku
+ * Vytvari reseni sudoku
  * Parametry: matrix - 2D pole
- *            pg - PermutacionGenerator
- * Random
  * Konstruktory: trida ma jeden bezparametricky konstruktor,
- *               ktery nastavi velikost pole a vytvori instaci generatoru permutaci
+ *               ktery nastavi velikost 2d pole
  * Metody:
  *        checkRow - zkontroluje, jestli muze dosadit do radku cislo
  *        checkColumn - zkontroluje, jestli muze dosadit do sloupce cislo
  *        checkSquare - zkontroluje, jestli muze dosadit do ctverce 3x3 cislo
- *        fillCell - vyplni prazdne policko vhodnym cislem dle pravidel sudoku
  *        fillCells - vyplni vsechna neobsazena policka spravnymi cisly dle pravidel sudoku
  *        generate - vygeneruje cele sudoku
  *        print - vytiske hotove sudoku
@@ -86,38 +83,21 @@ public class SudokuSolver {
     }
 
     /*
+     * Funkce vyplni vsechna neobsazena policka spravnymi cisly dle pravidel sudoku
      * Funkce na vstupu dostane souradnice prazdneho policka
      * Funkce vyplni prazdne policko vhodnym cislem dle pravidel
      * sudoku: provedeme kontrolu radku, sloupce, ctverce 3x3
+     * Pokud funkce najde cislo, ktere odpovida vsem parametrum sudoku, zapise
+     * ho do pole a rekurzivne se zavola
+     * Takovym zpusobem postupuje az do te doby nez nevyresi cele sudoku nebo nenarazi
+     * na policko kam nejde doplnit ani jedno cislo
+     * Potom funkce vrati false na soucasne policko nastavi 0 a vrati se na posledni policko, ktere bylo prazdne
+     * (v zasobniku na dalsi otevrenou funkci v poradi) a tam zkusi jine cislo
+     * To dela do te doby dokud kompletne nevyresi sudoku nebo nezkusi vsechna
+     * prazdna policka a zjisti ze sudoku nema reseni
      */
-    /*private void fillCell(int cellRow, int cellColumn) {
-        int newNumber = 0;
-        boolean wrongNumber = true;
 
-        // Dokud nemame vhodne cislo a zaroven dosazovane cislo
-        // neni vetsi nez 9
-        while (wrongNumber && (newNumber < 9)) {
-            wrongNumber = false;
-            // Vygenerujeme nove cislo zvysenim o 1
-            newNumber = newNumber + 1;
-            // Zkontrolujeme, jestli cislo lze dosadit do radku,
-            // sloupce a ctverce 3x3
-            if (!(checkRow(newNumber, cellRow)) || (!checkColumn(newNumber, cellColumn)) || (!checkSquare(newNumber, cellRow, cellColumn))) {
-                wrongNumber = true;
-                fillCell(cellRow, cellColumn);
-                this.matrix[cellRow][cellColumn] = 0;
-                return;
-            }
-            // Vyplnim policko vybranym cislem
-            this.matrix[cellRow][cellColumn] = newNumber;
-        }
-    }*/
-
-
-    /*
-     * Funkce vyplni vsechna neobsazena policka spravnymi cisly dle pravidel sudoku
-     */
-    private boolean fillCells() {
+    public boolean fillCells() {
         // Porchzim cele pole 9x9 od leveho horniho rohu
         for(int cellRow = 0; cellRow < this.matrix.length; cellRow++) {
             for(int cellColumn = 0; cellColumn < this.matrix[cellRow].length; cellColumn++) {
@@ -125,6 +105,7 @@ public class SudokuSolver {
                     for(int newNumber = 1; newNumber <= this.matrix.length; newNumber++) {
                         if((checkRow(newNumber, cellRow)) && (checkColumn(newNumber, cellColumn)) && (checkSquare(newNumber, cellRow, cellColumn))) {
                             this.matrix[cellRow][cellColumn] = newNumber;
+                            //rekurzivne volam funkci
                             if(fillCells()) {
                                 return true;
                             }
@@ -144,11 +125,13 @@ public class SudokuSolver {
      * Funkce vygeneruje cele sudoku
      */
     public void generate() {
+        System.out.println("jsem tu v generate");
         if(fillCells()) {
             cislo = 1;
         }
         else {
             cislo = 0;
+            System.out.println("ne ty zmrde");
         }
     }
 
